@@ -316,7 +316,8 @@ fun hasDifferentDigits(n: Int): Boolean {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun squareSequenceDigit(n: Int): Int {
-    var pow = n * 2
+    TODO()
+/**   var pow = n * 2
     var numb: String = ""
     var number: Long
     var counter = 0
@@ -339,6 +340,7 @@ fun squareSequenceDigit(n: Int): Int {
         pow--
     }
     return digit
+ */
 }
 
 /**
