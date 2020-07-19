@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import java.lang.IllegalArgumentException
+import java.lang.NumberFormatException
+
 /**
  * Пример
  *
@@ -69,7 +72,9 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    TODO()
+}
 
 /**
  * Средняя
@@ -109,7 +114,18 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    var max = -1
+    val arr = jumps.split(" ")
+    val set = setOf("-", "%")
+
+    for (i in arr.indices) {
+        if (arr[i].toIntOrNull() == null && (arr[i] !in set)) return -1
+        if (arr[i].toIntOrNull() != null && arr[i].toInt() > max) max = arr[i].toInt()
+    }
+
+    return max
+}
 
 /**
  * Сложная
@@ -122,7 +138,19 @@ fun bestLongJump(jumps: String): Int = TODO()
  * При нарушении формата входной строки, а также в случае отсутствия удачных попыток,
  * вернуть -1.
  */
-fun bestHighJump(jumps: String): Int = TODO()
+fun bestHighJump(jumps: String): Int {
+    val arr = jumps.split(" ")
+    var max = -1
+    try {
+        for (i in arr.indices) {
+            if (i % 2 == 0) continue
+            if (arr[i].contains("+")) max = arr[i - 1].toInt()
+        }
+    } catch (e: NumberFormatException) {
+        return -1
+    }
+    return max
+}
 
 /**
  * Сложная
@@ -133,7 +161,36 @@ fun bestHighJump(jumps: String): Int = TODO()
  * Вернуть значение выражения (6 для примера).
  * Про нарушении формата входной строки бросить исключение IllegalArgumentException
  */
-fun plusMinus(expression: String): Int = TODO()
+fun plusMinus(expression: String): Int {
+    val inputArr = expression.split(" ")
+    val numbers = mutableListOf<Int>()
+    val digits = mutableListOf<String>()
+    var sum: Int
+
+    try {
+        for (i in inputArr.indices) {
+            if (i % 2 == 0) {
+                if (inputArr[i].first() == '+' || inputArr[i].first() == '-') throw IllegalArgumentException()
+                numbers.add(inputArr[i].toInt())
+            } else digits.add(inputArr[i])
+        }
+
+        if (numbers.size == 1) return numbers[0]
+
+        fun operation(a: Int, b: Int, dig: String): Int = when (dig) {
+            "+" -> a + b
+            else -> a - b
+        }
+
+        sum = numbers[0]
+        for (i in 0 until digits.size) {
+            sum = operation(sum, numbers[i + 1], digits[i])
+        }
+    } catch (e: Exception) {
+        throw IllegalArgumentException()
+    }
+    return sum
+}
 
 /**
  * Сложная
@@ -144,7 +201,14 @@ fun plusMinus(expression: String): Int = TODO()
  * Вернуть индекс начала первого повторяющегося слова, или -1, если повторов нет.
  * Пример: "Он пошёл в в школу" => результат 9 (индекс первого 'в')
  */
-fun firstDuplicateIndex(str: String): Int = TODO()
+fun firstDuplicateIndex(str: String): Int {
+    val arr = str.split(" ")
+    if (arr.size == 1) return -1
+    for (i in (arr.indices - 1)) {
+        if (arr[i].toLowerCase() == arr[i + 1].toLowerCase()) return str.toLowerCase().indexOf("${arr[i]} ${arr[i]}")
+    }
+    return -1
+}
 
 /**
  * Сложная
@@ -157,7 +221,26 @@ fun firstDuplicateIndex(str: String): Int = TODO()
  * или пустую строку при нарушении формата строки.
  * Все цены должны быть больше либо равны нуля.
  */
-fun mostExpensive(description: String): String = TODO()
+fun mostExpensive(description: String): String {
+    val inputArr = description.split("; ")
+    val map = mutableMapOf<String, Double>()
+
+    try {
+        for (i in inputArr) {
+            val a = i.split(" ")
+            map[a[0]] = a[1].toDouble()
+        }
+
+        val maxV = map.values.max()
+
+        for (k in map.keys) {
+            if (map.get(k) == maxV) return k
+        }
+    } catch (e: java.lang.Exception) {
+        return ""
+    }
+    return ""
+}
 
 /**
  * Сложная
@@ -170,7 +253,46 @@ fun mostExpensive(description: String): String = TODO()
  *
  * Вернуть -1, если roman не является корректным римским числом
  */
-fun fromRoman(roman: String): Int = TODO()
+fun fromRoman(roman: String): Int {
+    fun simpleRoman(str: String): Int = when (str) {
+        "M" -> 1000
+        "CM" -> 900
+        "CD" -> 400
+        "D" -> 500
+        "XC" -> 90
+        "C" -> 100
+        "XL" -> 40
+        "L" -> 50
+        "X" -> 10
+        "IX" -> 9
+        "IV" -> 4
+        "V" -> 5
+        "I" -> 1
+        else -> -1
+    }
+
+    var indexStart = 0
+    var indexEnd = 1
+    var sum = 0
+
+    if (roman.length == 1) {
+        return simpleRoman(roman)
+    }
+
+    for (i in roman.indices) {
+        if (indexEnd < roman.length && simpleRoman(roman.substring(indexStart, indexEnd + 1)) != -1) {
+            sum += simpleRoman(roman.substring(indexStart, indexEnd + 1))
+            indexStart += 2
+            indexEnd += 2
+        } else if (indexEnd <= roman.length && simpleRoman(roman.substring(indexStart, indexEnd)) != -1) {
+            sum += simpleRoman(roman.substring(indexStart, indexEnd))
+            indexStart += 1
+            indexEnd += 1
+        } else if (indexEnd < roman.length) return -1
+    }
+
+    return sum
+}
 
 /**
  * Очень сложная
